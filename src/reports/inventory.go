@@ -3,15 +3,18 @@ package reports
 import (
 	"encoding/csv"
 	"fmt"
+	"html/template"
 	"io"
+	"net/http"
 )
 
 type CheckoutList struct {
+	tmpl      *template.Template
 	Inventory []Checkout
 }
 
-func CreateCheckoutList(studentaccessorycsv *csv.Reader) (CheckoutList, error) {
-	var list CheckoutList
+func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Template) (CheckoutList, error) {
+	list := CheckoutList{tmpl: templates}
 
 	var readErrors = make([]error, 0)
 	for {
@@ -48,8 +51,6 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader) (CheckoutList, error) {
 	return list, err
 }
 
-
-
 type Checkout struct {
 	StudentID       string
 	LastName        string
@@ -64,4 +65,8 @@ type Checkout struct {
 	QuantityIssued  string
 	QuantityMissing string
 	MissingValue    string
+}
+
+func (cl CheckoutList) LookupHandler(w http.ResponseWriter, r *http.Request) {
+
 }

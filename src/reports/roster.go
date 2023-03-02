@@ -3,6 +3,7 @@ package reports
 import (
 	"encoding/csv"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 )
@@ -26,15 +27,16 @@ type Stu415 struct {
 }
 
 type Roster struct {
+	tmpl     *template.Template
 	Students []Stu415
 }
 
-func CreateRosterList(studentaccessorycsv *csv.Reader) (Roster, error) {
-	var list Roster
+func CreateRosterList(stu415s *csv.Reader, templates *template.Template) (Roster, error) {
+	list := Roster{tmpl: templates}
 
 	var readErrors = make([]error, 0)
 	for {
-		record, err := studentaccessorycsv.Read()
+		record, err := stu415s.Read()
 		if err == io.EOF {
 			break
 		}
