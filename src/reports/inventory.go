@@ -10,7 +10,7 @@ import (
 
 type CheckoutList struct {
 	tmpl      *template.Template
-	Inventory []Checkout
+	Inventory map[string]Checkout
 }
 
 func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Template) (CheckoutList, error) {
@@ -27,7 +27,7 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Tem
 			readErrors = append(readErrors, err)
 			continue
 		}
-		list.Inventory = append(list.Inventory, Checkout{
+		list.Inventory[record[0]] = Checkout{
 			StudentID:       record[0],
 			LastName:        record[1],
 			FirstName:       record[2],
@@ -41,7 +41,7 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Tem
 			QuantityIssued:  record[10],
 			QuantityMissing: record[11],
 			MissingValue:    record[12],
-		})
+		}
 	}
 	var err error
 	if len(readErrors) > 0 {
@@ -68,5 +68,9 @@ type Checkout struct {
 }
 
 func (cl CheckoutList) LookupHandler(w http.ResponseWriter, r *http.Request) {
+	cl.tmpl.Lookup("lookup_form").Execute(w, cl)
+}
 
+func (cl CheckoutList) ShowLookupHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "looking up student %s", r.FormValue("studentid"))
 }
