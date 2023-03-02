@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"net/http"
 )
 
 type Stu415 struct {
@@ -24,12 +25,12 @@ type Stu415 struct {
 	PreScheduled     string
 }
 
-type Stu415List struct {
+type Roster struct {
 	Students []Stu415
 }
 
-func CreateRosterList(studentaccessorycsv *csv.Reader) (Stu415List, error) {
-	var list Stu415List
+func CreateRosterList(studentaccessorycsv *csv.Reader) (Roster, error) {
+	var list Roster
 
 	var readErrors = make([]error, 0)
 	for {
@@ -61,7 +62,11 @@ func CreateRosterList(studentaccessorycsv *csv.Reader) (Stu415List, error) {
 	}
 	var err error
 	if len(readErrors) > 0 {
-		err = fmt.Errorf("%d errors occurred while reading the file", len(readErrors))
+		err = fmt.Errorf("%d errors occurred while reading roster file", len(readErrors))
 	}
 	return list, err
+}
+
+func (rl Roster) ListHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, rl.Students)
 }

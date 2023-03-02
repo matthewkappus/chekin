@@ -42,11 +42,13 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader) (CheckoutList, error) {
 	}
 	var err error
 	if len(readErrors) > 0 {
-		err = fmt.Errorf("%d errors occurred while reading the file", len(readErrors))
+		err = fmt.Errorf("%d errors occurred while reading the inventory file", len(readErrors))
 	}
 
 	return list, err
 }
+
+
 
 type Checkout struct {
 	StudentID       string
