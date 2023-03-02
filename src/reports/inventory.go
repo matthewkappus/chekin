@@ -27,25 +27,37 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Tem
 			readErrors = append(readErrors, err)
 			continue
 		}
+
+		// remove leading =" from StudentID and trailing "
+		sid := record[1][2 : len(record[1])-1]
 		c := Checkout{
-			StudentID:       record[0],
-			LastName:        record[1],
-			FirstName:       record[2],
-			MiddleName:      record[3],
-			Grade:           record[4],
-			Homeroom:        record[5],
-			Tag:             record[6],
-			ProductName:     record[7],
-			AccessoryName:   record[8],
-			IssuedDate:      record[9],
-			QuantityIssued:  record[10],
-			QuantityMissing: record[11],
-			MissingValue:    record[12],
+			SiteName: record[0],
+			// remove leading =" from StudentID and trailing "
+			StudentID:      sid,
+			LastName:       record[2],
+			FirstName:      record[3],
+			MiddleName:     record[4],
+			Grade:          record[5],
+			HomeRoom:       record[6],
+			StudentNotes:   record[7],
+			ProductName:    record[8],
+			Model:          record[9],
+			ProductType:    record[10],
+			SuggestedPrice: record[11],
+			Tag:            record[12],
+			Serial:         record[13],
+			AssetType:      record[14],
+			ParentTag:      record[15],
+			Status:         record[16],
+			// todo: convert to date
+			ScanDate:    record[17],
+			StatusNotes: record[18],
 		}
 
 		// append checkouts to students inventory or create a new inventory
 		if cl.Inventory[c.StudentID] == nil {
 			cl.Inventory[c.StudentID] = make([]Checkout, 0)
+			cl.Inventory[c.StudentID] = append(cl.Inventory[c.StudentID], c)
 		} else {
 			cl.Inventory[c.StudentID] = append(cl.Inventory[c.StudentID], c)
 		}
@@ -60,19 +72,25 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Tem
 }
 
 type Checkout struct {
-	StudentID       string
-	LastName        string
-	FirstName       string
-	MiddleName      string
-	Grade           string
-	Homeroom        string
-	Tag             string
-	ProductName     string
-	AccessoryName   string
-	IssuedDate      string
-	QuantityIssued  string
-	QuantityMissing string
-	MissingValue    string
+	SiteName       string
+	StudentID      string
+	LastName       string
+	FirstName      string
+	MiddleName     string
+	Grade          string
+	HomeRoom       string
+	StudentNotes   string
+	ProductName    string
+	Model          string
+	ProductType    string
+	SuggestedPrice string
+	Tag            string
+	Serial         string
+	AssetType      string
+	ParentTag      string
+	Status         string
+	ScanDate       string
+	StatusNotes    string
 }
 
 func (cl CheckoutList) LookupHandler(w http.ResponseWriter, r *http.Request) {
@@ -80,5 +98,15 @@ func (cl CheckoutList) LookupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cl CheckoutList) ShowLookupHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "looking up student %s", r.FormValue("studentid"))
+	// todo: lookup student id by login email
+
+	// Austin Zimmerman: 980042643
+	sid := r.FormValue("studentid")
+	fmt.Fprintf(w, "looking up student %s", sid)
+	if cl.Inventory[sid] == nil {
+		fmt.Fprintf(w, "No inventory for %s", sid)
+	} else {
+		fmt.Fprintf(w, "Inventory for %s", sid)
+		fmt.Fprintf(w, "%v", cl.Inventory[sid])
+	}
 }
