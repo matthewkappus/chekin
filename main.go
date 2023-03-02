@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/matthewkappus/src/checkin/reports"
+	"github.com/matthewkappus/src/chekin/reports"
 )
 
 var CheckoutList reports.CheckoutList
