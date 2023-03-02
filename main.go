@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/matthewkappus/src/chekin/reports"
+	"github.com/matthewkappus/chekin/src/reports"
 )
 
 var CheckoutList reports.CheckoutList
@@ -19,7 +19,7 @@ func init() {
 		log.Fatalln("Couldn't open the csv file", err)
 	}
 
-	CheckoutList, err = reports.CreateCheckoutList(*csv.NewReader(studentInventoryStatus))
+	CheckoutList, err = reports.CreateCheckoutList(csv.NewReader(studentInventoryStatus))
 	if err != nil {
 		log.Fatal(err)
 	}
