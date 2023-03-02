@@ -10,11 +10,11 @@ import (
 
 type CheckoutList struct {
 	tmpl      *template.Template
-	Inventory map[string]Checkout
+	Inventory map[string][]Checkout
 }
 
 func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Template) (CheckoutList, error) {
-	list := CheckoutList{tmpl: templates}
+	cl := CheckoutList{tmpl: templates, Inventory: make(map[string][]Checkout)}
 
 	var readErrors = make([]error, 0)
 	for {
@@ -27,7 +27,7 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Tem
 			readErrors = append(readErrors, err)
 			continue
 		}
-		list.Inventory[record[0]] = Checkout{
+		c := Checkout{
 			StudentID:       record[0],
 			LastName:        record[1],
 			FirstName:       record[2],
@@ -42,13 +42,21 @@ func CreateCheckoutList(studentaccessorycsv *csv.Reader, templates *template.Tem
 			QuantityMissing: record[11],
 			MissingValue:    record[12],
 		}
+
+		// append checkouts to students inventory or create a new inventory
+		if cl.Inventory[c.StudentID] == nil {
+			cl.Inventory[c.StudentID] = make([]Checkout, 0)
+		} else {
+			cl.Inventory[c.StudentID] = append(cl.Inventory[c.StudentID], c)
+		}
+
 	}
 	var err error
 	if len(readErrors) > 0 {
 		err = fmt.Errorf("%d errors occurred while reading the inventory file", len(readErrors))
 	}
 
-	return list, err
+	return cl, err
 }
 
 type Checkout struct {
