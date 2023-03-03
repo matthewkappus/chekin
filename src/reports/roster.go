@@ -69,6 +69,9 @@ func CreateRosterList(stu415s *csv.Reader, templates *template.Template) (Roster
 	return list, err
 }
 
-func (rl Roster) ListHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, rl.Students)
+func (ro Roster) IndexHandler(w http.ResponseWriter, r *http.Request) {
+	ro.tmpl.ExecuteTemplate(w, "index", nil)
+}
+func (ro Roster) ListHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, ro.Students)
 }

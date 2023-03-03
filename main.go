@@ -47,8 +47,7 @@ func main() {
 	http.HandleFunc("/lookup", CheckoutList.LookupHandler)
 	http.HandleFunc("/lookup_inventory", CheckoutList.ShowLookupHandler)
 	http.HandleFunc("/students", Roster.ListHandler)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello, world!")
-	})
+	http.HandleFunc("/", Roster.IndexHandler)
+
 	http.ListenAndServe(":8080", nil)
 }
